@@ -98,6 +98,14 @@
   }
   .cross-check { margin:14px auto 0; max-width:520px; font-size:15.5px; }
   .cross-check a { color:#2563eb; font-weight:600; }
+  .fb-help {
+    display:none; text-align:left; background:#eff6ff;
+    border:1.5px solid #bfdbfe; border-radius:12px;
+    padding:12px 14px; font-size:15.5px; margin:14px auto 0; max-width:520px;
+  }
+  .fb-help b { color:#1e40af; }
+  .fb-help ol { margin:6px 0 6px 20px; }
+  .fb-help li { margin-bottom:4px; }
   .share-row { margin-top:18px; }
   .share-row p { font-size:15px; color:#475569; margin-bottom:8px; }
   .share-btn {
@@ -159,6 +167,7 @@
     <p id="verdictAdvice"></p>
     <ul class="reasons" id="reasonsList"></ul>
     <div class="cross-check" id="crossCheck"></div>
+    <div class="fb-help" id="fbHelp"></div>
     <div class="share-row">
       <p>এই ফলাফলটা বন্ধুদের জানিয়ে দাও — তারাও যেন গুজব শেয়ার না করে 👇</p>
       <a class="share-btn wa" id="waShare" href="#" target="_blank" rel="noopener">💬 WhatsApp</a>
@@ -567,6 +576,13 @@ function render(r){
   if(query){
     cc.innerHTML = '🔎 নিজে আরও মিলিয়ে দেখতে চাও? <a href="https://www.google.com/search?q=' + encodeURIComponent(query) + '" target="_blank" rel="noopener">Google-এ এটা search করে দেখো</a> — বড় সংবাদ মাধ্যমগুলোতেও খবরটা আছে কিনা।';
   } else cc.innerHTML = '';
+
+  const fbHelp = document.getElementById('fbHelp');
+  const isFb = r.domain && (r.domain.indexOf('facebook') >= 0 || r.domain === 'fb.com' || r.domain === 'fb.watch');
+  if(r.mode === 'partial' && isFb){
+    fbHelp.innerHTML = '📘 <b>Facebook post-এর লেখাটা এভাবে এনে যাচাই করো:</b><ol><li>যেই post-টা যাচাই করতে চাও, সেটা খোলো</li><li>Post-এর লেখার ওপর <b>চেপে ধরে Copy</b> করো</li><li>এখানে ফিরে এসে উপরের বক্সে <b>paste</b> করে আবার যাচাই করো</li></ol>📸 ছবি বা video-র post হলে — খুব শীঘ্রই আমাদের Messenger bot-এ পাঠিয়েই যাচাই করতে পারবে!';
+    fbHelp.style.display = 'block';
+  } else fbHelp.style.display = 'none';
 
   const ring = document.getElementById('ring');
   const num = document.getElementById('ringNum');
