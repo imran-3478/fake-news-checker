@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>সত্যি নাকি গুজব? — শেয়ার করার আগে যাচাই করো</title>
+<meta name="description" content="Facebook-এ কোনো খবর শেয়ার করার আগে মাত্র ১০ সেকেন্ডে যাচাই করো — এটা আসল খবর নাকি গুজব?">
+<meta property="og:title" content="সত্যি নাকি গুজব? 🔍">
+<meta property="og:description" content="শেয়ার করার আগে ১০ সেকেন্ডে যাচাই করো — খবরটা আসল নাকি গুজব?">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Hind Siliguri', 'Noto Sans Bengali', Arial, sans-serif;
+    background:#f0f4f8; color:#1f2937; line-height:1.6;
+  }
+  .wrap { max-width:680px; margin:0 auto; padding:0 16px 48px; }
+
+  header {
+    background:linear-gradient(135deg,#1e3a8a 0%,#0e7490 100%);
+    color:#fff; text-align:center; padding:38px 18px 30px;
+    border-radius:0 0 28px 28px; box-shadow:0 6px 24px rgba(30,58,138,.25);
+  }
+  header .logo { font-size:52px; line-height:1; }
+  header h1 { font-size:34px; font-weight:700; margin-top:6px; }
+  header p { font-size:17px; opacity:.92; margin-top:4px; }
+
+  .card {
+    background:#fff; border-radius:20px; padding:22px 18px;
+    margin-top:22px; box-shadow:0 4px 18px rgba(15,23,42,.08);
+  }
+  .card h2 { font-size:20px; margin-bottom:10px; }
+
+  textarea {
+    width:100%; min-height:130px; border:2px solid #cbd5e1; border-radius:14px;
+    padding:14px; font-family:inherit; font-size:17px; resize:vertical;
+    outline:none; transition:border-color .2s;
+  }
+  textarea:focus { border-color:#2563eb; }
+  .char-count { text-align:right; font-size:13px; color:#64748b; margin-top:4px; }
+
+  .check-btn {
+    display:block; width:100%; margin-top:14px; padding:16px;
+    font-family:inherit; font-size:21px; font-weight:700; color:#fff;
+    background:linear-gradient(135deg,#16a34a,#15803d);
+    border:none; border-radius:14px; cursor:pointer;
+    box-shadow:0 5px 16px rgba(22,163,74,.35); transition:transform .1s;
+  }
+  .check-btn:active { transform:scale(.98); }
+
+  .examples { margin-top:16px; }
+  .examples p { font-size:15px; color:#475569; margin-bottom:8px; }
+  .chip {
+    display:inline-block; margin:0 6px 8px 0; padding:8px 14px;
+    font-family:inherit; font-size:15px; font-weight:500;
+    background:#eef2ff; color:#3730a3; border:1.5px solid #c7d2fe;
+    border-radius:999px; cursor:pointer;
+  }
+  .chip:active { background:#e0e7ff; }
+
+  #result { display:none; text-align:center; }
+  .ring {
+    width:150px; height:150px; border-radius:50%; margin:8px auto 10px;
+    display:flex; align-items:center; justify-content:center;
+    background:conic-gradient(#e5e7eb 0deg, #e5e7eb 360deg);
+    transition:background .6s;
+  }
+  .ring-inner {
+    width:118px; height:118px; border-radius:50%; background:#fff;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .ring-num { font-size:36px; font-weight:700; line-height:1; }
+  .ring-label { font-size:13px; color:#64748b; }
+  #verdictTitle { font-size:24px; font-weight:700; margin-top:6px; }
+  #verdictAdvice { font-size:16.5px; color:#334155; margin-top:6px; }
+  .reasons { text-align:left; margin:16px auto 0; max-width:520px; }
+  .reasons li {
+    list-style:none; background:#f8fafc; border:1px solid #e2e8f0;
+    border-radius:10px; padding:9px 12px; margin-bottom:8px; font-size:15.5px;
+  }
+  .share-row { margin-top:18px; }
+  .share-row p { font-size:15px; color:#475569; margin-bottom:8px; }
+  .share-btn {
+    display:inline-block; margin:0 4px 8px; padding:11px 18px;
+    font-family:inherit; font-size:16px; font-weight:600; color:#fff;
+    border:none; border-radius:10px; cursor:pointer; text-decoration:none;
+  }
+  .wa { background:#25d366; } .fb { background:#1877f2; }
+  .copy { background:#475569; } .again { background:#e2e8f0; color:#1f2937; }
+
+  .steps { display:flex; gap:10px; text-align:center; }
+  .step { flex:1; background:#f8fafc; border-radius:14px; padding:14px 6px; }
+  .step .ic { font-size:30px; }
+  .step p { font-size:14.5px; font-weight:500; margin-top:4px; }
+
+  .tips li { margin:0 0 10px 20px; font-size:16px; }
+
+  footer { text-align:center; color:#64748b; font-size:14px; margin-top:26px; padding:0 8px; }
+  footer a { color:#2563eb; }
+  .warn {
+    background:#fffbeb; border:1.5px solid #fcd34d; border-radius:12px;
+    padding:12px 14px; font-size:15px; margin-top:16px; text-align:left;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🔍</div>
+  <h1>সত্যি নাকি গুজব?</h1>
+  <p>শেয়ার করার আগে মাত্র ১০ সেকেন্ডে যাচাই করো ✅</p>
+</header>
+
+<div class="wrap">
+
+  <div class="card">
+    <h2>📋 খবরটা এখানে paste করো</h2>
+    <textarea id="newsInput" placeholder="Facebook-এ দেখা খবরটার লেখা অথবা link-টা এখানে paste করো..."></textarea>
+    <div class="char-count"><span id="charCount">0</span> অক্ষর</div>
+    <button class="check-btn" id="checkBtn">এখনই যাচাই করো 🔎</button>
+
+    <div class="examples">
+      <p>আগে উদাহরণ দিয়ে test করে দেখো 👇</p>
+      <button class="chip" data-ex="fake">😱 একটা ভুয়া খবর</button>
+      <button class="chip" data-ex="real">📰 একটা আসল ধাঁচের খবর</button>
+      <button class="chip" data-ex="blog">🔗 একটা সন্দেহজনক link</button>
+    </div>
+  </div>
+
+  <div class="card" id="result">
+    <div class="ring" id="ring"><div class="ring-inner">
+      <div class="ring-num" id="ringNum">0%</div>
+      <div class="ring-label">ঝুঁকির মাত্রা</div>
+    </div></div>
+    <div id="verdictTitle"></div>
+    <p id="verdictAdvice"></p>
+    <ul class="reasons" id="reasonsList"></ul>
+    <div class="share-row">
+      <p>এই ফলাফলটা বন্ধুদের জানিয়ে দাও — তারাও যেন গুজব শেয়ার না করে 👇</p>
+      <a class="share-btn wa" id="waShare" href="#" target="_blank" rel="noopener">💬 WhatsApp</a>
+      <a class="share-btn fb" id="fbShare" href="#" target="_blank" rel="noopener">📘 Facebook</a>
+      <button class="share-btn copy" id="copyBtn">📋 Copy করো</button>
+      <button class="share-btn again" id="againBtn">🔄 আবার যাচাই</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>⚙️ কীভাবে কাজ করে?</h2>
+    <div class="steps">
+      <div class="step"><div class="ic">📋</div><p>খবর paste করো</p></div>
+      <div class="step"><div class="ic">🤖</div><p>AI সংকেত বিশ্লেষণ করে</p></div>
+      <div class="step"><div class="ic">🚦</div><p>রঙিন ফলাফল দেখো</p></div>
+    </div>
+    <div class="warn">⚠️ <b>মনে রেখো:</b> এই tool খবরের ভাষা, source আর লেখার ধরন দেখে <b>প্রাথমিক ধারণা</b> দেয় — এটা চূড়ান্ত রায় না। বড় বা গুরুত্বপূর্ণ খবর হলে নির্ভরযোগ্য fact-check site-এও মিলিয়ে দেখো।</div>
+  </div>
+
+  <div class="card">
+    <h2>🧠 নিজে বোঝার ৫টা সহজ কৌশল</h2>
+    <ul class="tips">
+      <li><b>Source দেখো</b> — খবরটা কোন site/page থেকে? নাম আগে শুনেছো তো?</li>
+      <li><b>অন্য মাধ্যমেও আছে কিনা</b> — সত্যি খবর হলে প্রথম আলো, BBC-র মতো বড় মাধ্যমেও থাকবে।</li>
+      <li><b>অতিরিক্ত আবেগ = সতর্ক সংকেত</b> — "চমকে যাবেন!", "শেয়ার না করে যাবেন না" — এগুলো clickbait-এর লক্ষণ।</li>
+      <li><b>তারিখ ও ছবি যাচাই করো</b> — পুরনো ছবি নতুন ঘটনা বলে চালানো সবচেয়ে common গুজব।</li>
+      <li><b>সন্দেহ হলে শেয়ার না</b> — নিশ্চিত না হয়ে share করা মানেই গুজব ছড়াতে সাহায্য করা।</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>নিশ্চিত fact-check-এর জন্য দেখো:
+      <a href="https://rumorscanner.com" target="_blank" rel="noopener">Rumor Scanner</a> •
+      <a href="https://dismislab.com" target="_blank" rel="noopener">Dismislab</a>
+    </p>
+    <p style="margin-top:8px;">❤️ গুজবমুক্ত বাংলাদেশের জন্য — শেয়ার করার আগে যাচাই করো</p>
+    <p style="margin-top:10px;">👨‍💻 তৈরি করেছেন <b>Imran Akanda</b> • <a href="https://github.com/imran-3478" target="_blank" rel="noopener">GitHub: imran-3478</a></p>
+  </footer>
+
+</div>
+
+<script>
+const EXAMPLES = {
+  fake: "😱😱 চমকে যাবেন!! এক গ্লাস গরম পানি খেলেই ক্যান্সার ভালো হয়ে যায়! বড় বড় ডাক্তাররা এই গোপন সত্য এতদিন লুকিয়ে রেখেছিল! সবাইকে শেয়ার করে জানিয়ে দিন, দেরি করবেন না!!! এই খবরটা যত পারেন ছড়িয়ে দিন 🙏🙏",
+  real: "আজ মঙ্গলবার সকালে ঢাকা বিশ্ববিদ্যালয়ে নতুন শিক্ষাবর্ষের ক্লাস শুরু হয়েছে বলে জানিয়েছেন বিশ্ববিদ্যালয়ের জনসংযোগ কর্মকর্তা। তিনি বলেন, এ বছর মোট সাত হাজার শিক্ষার্থী ভর্তি হয়েছেন। উপাচার্য বলেন, শিক্ষার মান বাড়াতে গবেষণা খাতে বরাদ্দ বাড়ানো হয়েছে।",
+  blog: "https://viral-khobor24.blogspot.com/2026/10/breaking-gopon-khobor.html"
+};
+
+const CLICKBAIT = ["চমকে","বিশ্বাস হবে না","অবিশ্বাস্য","গোপন সত্য","গোপন রহস্য","ফাঁস হলো","চাঞ্চল্যকর","তোলপাড়","কেউ জানে না","লুকিয়ে রেখেছিল","ভাইরাল","অবাক কাণ্ড","শেষ পর্যন্ত দেখুন","দেখুন ভিডিওতে","জানলে অবাক","হইচই","মাথা ঘুরে যাবে","shocking","you won't believe","unbelievable","secret","exposed","must watch","watch till end","breaking news","viral"];
+const SHARE_PRESSURE = ["শেয়ার করুন","শেয়ার করো","শেয়ার করে জানিয়ে","সবাইকে জানিয়ে দিন","সবাইকে জানান","ছড়িয়ে দিন","please share","share this","share করে","forward করুন","দেরি না করে শেয়ার"];
+const MONEY = ["ফ্রি পাবেন","ফ্রিতে পাবেন","টাকা ইনকাম","ইনকাম করুন","লটারি","জিতে নিন","মোবাইল রিচার্জ ফ্রি","বিকাশে টাকা পাবেন","free money","lottery","win cash","cash prize"];
+const MIRACLE = ["ক্যান্সার ভালো","একদিনেই ভালো","গ্যারান্টি দিয়ে","১০০% কার্যকর","100% কার্যকর","সব রোগ ভালো","ডায়াবেটিস ভালো"];
+const ATTRIBUTION = ["জানিয়েছেন","জানান","বলেন","বলেছেন","প্রতিবেদক","সংবাদদাতা","সূত্র","কর্মকর্তা","মুখপাত্র","সংবাদ সম্মেলনে"];
+const CREDIBLE = ["prothomalo.com","kalerkantho.com","bdnews24.com","thedailystar.net","dhakatribune.com","jugantor.com","ittefaq.com.bd","somoynews.tv","jamuna.tv","channel24bd.tv","independent24.com","banglanews24.com","ntvbd.com","rtvonline.com","ekattor.tv","bbc.com","reuters.com","aljazeera.com","dw.com","প্রথম আলো","কালের কণ্ঠ","বিবিসি"];
+const SATIRE = ["motikontho.com","earki"];
+const FREEHOST = ["blogspot.com","wordpress.com","weebly.com","sites.google.com","wixsite.com","vercel.app","netlify.app","github.io"];
+
+function findDomain(text){
+  const m = text.match(/https?:\/\/([^\s\/]+)/i) || text.match(/\b([a-z0-9-]+\.[a-z]{2,}(?:\.[a-z]{2})?)\b/i);
+  return m ? m[1].toLowerCase().replace(/^www\./,'') : null;
+}
+
+function analyze(raw){
+  const text = raw.trim();
+  const lower = text.toLowerCase();
+  let score = 0; const reasons = [];
+  const domain = findDomain(text);
+  let credibleHit = false;
+
+  if(domain){
+    if(SATIRE.some(d=>domain.includes(d))){
+      score += 70;
+      reasons.push("🎭 এই site-টা ব্যঙ্গ/স্যাটায়ার (মজা করে বানানো) — এখানকার 'খবর' আসল নয়।");
+    } else if(CREDIBLE.some(d=>domain.includes(d))){
+      score -= 35; credibleHit = true;
+      reasons.push("✅ খবরটা পরিচিত ও নির্ভরযোগ্য সংবাদ মাধ্যম থেকে এসেছে।");
+    } else if(FREEHOST.some(d=>domain.includes(d))){
+      score += 16;
+      reasons.push("⚠️ Link-টা একটা ফ্রি ব্লগ/site থেকে — এমন site যে কেউ বানাতে পারে, সম্পাদকীয় যাচাই থাকে না।");
+    } else {
+      score += 8;
+      reasons.push("❓ Website-টা খুব একটা পরিচিত নয় — source হিসেবে সতর্ক থাকা ভালো।");
+    }
+  }
+  if(!domain && CREDIBLE.some(d=>text.includes(d))){
+    score -= 20; credibleHit = true;
+    reasons.push("✅ লেখায় নির্ভরযোগ্য সংবাদ মাধ্যমের নাম উল্লেখ আছে।");
+  }
+
+  let cb = 0; const cbFound = [];
+  CLICKBAIT.forEach(w=>{ if(lower.includes(w)){ cb++; cbFound.push(w); } });
+  if(cb>0){
+    score += Math.min(cb*6, 30);
+    reasons.push("🎣 Clickbait ভাষা পাওয়া গেছে (" + cbFound.slice(0,3).join(", ") + ") — অতিরঞ্জিত ভাষা ভুয়া খবরের বড় লক্ষণ।");
+  }
+
+  if(SHARE_PRESSURE.some(w=>lower.includes(w))){
+    score += 14;
+    reasons.push("📢 লেখায় জোর করে শেয়ার করতে বলা হয়েছে — আসল খবর সাধারণত এভাবে শেয়ার চায় না।");
+  }
+  if(MONEY.some(w=>lower.includes(w))){
+    score += 14;
+    reasons.push("💸 ফ্রি টাকা/লটারি/ইনকামের লোভ দেখানো হয়েছে — এটা প্রতারণামূলক পোস্টের পরিচিত কৌশল।");
+  }
+  if(MIRACLE.some(w=>lower.includes(w))){
+    score += 14;
+    reasons.push("💊 অবিশ্বাস্য চিকিৎসা/ফলাফলের দাবি — প্রমাণ ছাড়া এমন বড় দাবি বিশ্বাসযোগ্য নয়।");
+  }
+
+  const excl = (text.match(/!/g)||[]).length;
+  if(excl>=3){
+    score += 10;
+    reasons.push("‼️ অতিরিক্ত বিস্ময়সূচক চিহ্ন (!) — উত্তেজনা তৈরি করে ছড়ানোই উদ্দেশ্য মনে হচ্ছে।");
+  }
+
+  const words = text.match(/[A-Za-z]{3,}/g)||[];
+  if(words.length>=4){
+    const caps = words.filter(w=>w===w.toUpperCase()).length;
+    if(caps/words.length>0.35){
+      score += 8;
+      reasons.push("🔠 অনেক শব্দ বড় হাতের অক্ষরে (ALL CAPS) — চিৎকার করে বিশ্বাস করানোর চেষ্টা।");
+    }
+  }
+
+  const emojis = (text.match(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu)||[]).length;
+  if(emojis>=4){
+    score += 6;
+    reasons.push("😱 প্রচুর ইমোজি ব্যবহার করা হয়েছে — আবেগ দিয়ে ভাইরাল করার কৌশল।");
+  }
+
+  const hasAttribution = ATTRIBUTION.some(w=>text.includes(w));
+  if(!domain && text.length>0 && text.length<70){
+    score += 8;
+    reasons.push("✂️ লেখাটা খুবই ছোট — কোনো বিস্তারিত তথ্য বা সূত্র নেই।");
+  }
+  if(hasAttribution){
+    score -= 10;
+    reasons.push("🗣️ লেখায় বক্তব্য/সূত্রের উল্লেখ আছে — প্রতিবেদনের ধাঁচ, এটা ভালো লক্ষণ।");
+  } else if(text.length>=70){
+    score += 8;
+    reasons.push("🔎 এত বড় দাবি, অথচ কারো বক্তব্য বা সূত্রের উল্লেখ নেই।");
+  }
+
+  score = Math.max(0, Math.min(100, score));
+
+  let verdict, advice, color;
+  if(score>=55){
+    verdict = "🔴 সাবধান! ভুয়া হওয়ার জোরালো লক্ষণ";
+    advice = "এই খবরটা শেয়ার না করাই ভালো। আগে Rumor Scanner / Dismislab-এ মিলিয়ে দেখো।";
+    color = "#dc2626";
+  } else if(score>=30){
+    verdict = "🟡 সন্দেহজনক — নিশ্চিত হওয়া যাচ্ছে না";
+    advice = "শেয়ার করার আগে অন্য নির্ভরযোগ্য মাধ্যমে খবরটা আছে কিনা যাচাই করো।";
+    color = "#d97706";
+  } else {
+    verdict = "🟢 আপাতত নির্ভরযোগ্য মনে হচ্ছে";
+    advice = "ভুয়া হওয়ার বড় লক্ষণ পাইনি। তবু খুব বড় দাবি হলে সূত্রটা একবার মিলিয়ে দেখো।";
+    color = "#16a34a";
+  }
+
+  if(reasons.length<2 && !credibleHit){
+    reasons.push("🧐 বড় কোনো সতর্ক সংকেত পাইনি, তবে source-টা নিজে একবার দেখে নেওয়া ভালো।");
+  }
+  return { score, verdict, advice, color, reasons };
+}
+
+const input = document.getElementById('newsInput');
+const charCount = document.getElementById('charCount');
+input.addEventListener('input', ()=>{ charCount.textContent = input.value.length; });
+
+document.querySelectorAll('.chip').forEach(ch=>{
+  ch.addEventListener('click', ()=>{
+    input.value = EXAMPLES[ch.dataset.ex];
+    charCount.textContent = input.value.length;
+    runCheck();
+  });
+});
+
+document.getElementById('checkBtn').addEventListener('click', runCheck);
+
+function runCheck(){
+  const val = input.value.trim();
+  if(!val){
+    input.focus();
+    input.style.borderColor = '#dc2626';
+    setTimeout(()=>{ input.style.borderColor=''; }, 1200);
+    return;
+  }
+  const r = analyze(val);
+  const res = document.getElementById('result');
+  res.style.display = 'block';
+  const vTitle = document.getElementById('verdictTitle');
+  vTitle.textContent = r.verdict;
+  vTitle.style.color = r.color;
+  document.getElementById('verdictAdvice').textContent = r.advice;
+  const ul = document.getElementById('reasonsList');
+  ul.innerHTML = '';
+  r.reasons.forEach(x=>{
+    const li = document.createElement('li');
+    li.textContent = x;
+    ul.appendChild(li);
+  });
+  const ring = document.getElementById('ring');
+  const num = document.getElementById('ringNum');
+  num.style.color = r.color;
+  ring.style.background = 'conic-gradient(' + r.color + ' ' + (r.score*3.6) + 'deg, #e5e7eb ' + (r.score*3.6) + 'deg)';
+  let cur = 0; const target = r.score;
+  const iv = setInterval(()=>{
+    cur += 2;
+    if(cur>=target){ cur = target; clearInterval(iv); }
+    num.textContent = cur + '%';
+  }, 18);
+
+  const pageUrl = location.href.split('#')[0];
+  const shareText = "আমি একটা খবর যাচাই করলাম 🔍\nফলাফল: " + r.verdict + " (ঝুঁকি " + r.score + "%)\nতুমিও শেয়ার করার আগে যাচাই করো 👉 " + pageUrl + "\n— 'সত্যি নাকি গুজব?' তৈরি করেছেন Imran Akanda";
+  document.getElementById('waShare').href = 'https://wa.me/?text=' + encodeURIComponent(shareText);
+  document.getElementById('fbShare').href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(pageUrl);
+  const copyBtn = document.getElementById('copyBtn');
+  copyBtn.onclick = ()=>{
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(shareText).then(()=>{
+        copyBtn.textContent = '✅ Copy হয়েছে!';
+        setTimeout(()=>{ copyBtn.textContent = '📋 Copy করো'; }, 2000);
+      });
+    }
+  };
+  document.getElementById('againBtn').onclick = ()=>{
+    res.style.display = 'none';
+    input.value = '';
+    charCount.textContent = '0';
+    window.scrollTo({ top:0, behavior:'smooth' });
+    input.focus();
+  };
+  setTimeout(()=>{ res.scrollIntoView({ behavior:'smooth', block:'start' }); }, 60);
+}
+</script>
+</body>
+</html>
