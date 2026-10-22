@@ -48,6 +48,13 @@
     box-shadow:0 5px 16px rgba(22,163,74,.35); transition:transform .1s;
   }
   .check-btn:active { transform:scale(.98); }
+  .check-btn[disabled] { opacity:.7; }
+
+  .status-line {
+    display:none; margin-top:12px; font-size:15.5px; color:#1e40af;
+    background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:12px;
+    padding:10px 14px; text-align:center;
+  }
 
   .examples { margin-top:16px; }
   .examples p { font-size:15px; color:#475569; margin-bottom:8px; }
@@ -60,6 +67,16 @@
   .chip:active { background:#e0e7ff; }
 
   #result { display:none; text-align:center; }
+  .mode-badge {
+    display:inline-block; font-size:14px; font-weight:600;
+    border-radius:999px; padding:5px 14px; margin-bottom:12px;
+    background:#eef2ff; color:#3730a3; border:1.5px solid #c7d2fe;
+  }
+  .article-title {
+    font-size:16.5px; font-weight:600; color:#334155;
+    background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px;
+    padding:9px 12px; margin:0 auto 12px; max-width:520px; text-align:left;
+  }
   .ring {
     width:150px; height:150px; border-radius:50%; margin:8px auto 10px;
     display:flex; align-items:center; justify-content:center;
@@ -79,6 +96,8 @@
     list-style:none; background:#f8fafc; border:1px solid #e2e8f0;
     border-radius:10px; padding:9px 12px; margin-bottom:8px; font-size:15.5px;
   }
+  .cross-check { margin:14px auto 0; max-width:520px; font-size:15.5px; }
+  .cross-check a { color:#2563eb; font-weight:600; }
   .share-row { margin-top:18px; }
   .share-row p { font-size:15px; color:#475569; margin-bottom:8px; }
   .share-btn {
@@ -119,6 +138,7 @@
     <textarea id="newsInput" placeholder="Facebook-এ দেখা খবরটার লেখা অথবা link-টা এখানে paste করো..."></textarea>
     <div class="char-count"><span id="charCount">0</span> অক্ষর</div>
     <button class="check-btn" id="checkBtn">এখনই যাচাই করো 🔎</button>
+    <div class="status-line" id="statusLine"></div>
 
     <div class="examples">
       <p>আগে উদাহরণ দিয়ে test করে দেখো 👇</p>
@@ -129,6 +149,8 @@
   </div>
 
   <div class="card" id="result">
+    <div class="mode-badge" id="modeBadge"></div>
+    <div class="article-title" id="articleTitle" style="display:none;"></div>
     <div class="ring" id="ring"><div class="ring-inner">
       <div class="ring-num" id="ringNum">0%</div>
       <div class="ring-label">ঝুঁকির মাত্রা</div>
@@ -136,6 +158,7 @@
     <div id="verdictTitle"></div>
     <p id="verdictAdvice"></p>
     <ul class="reasons" id="reasonsList"></ul>
+    <div class="cross-check" id="crossCheck"></div>
     <div class="share-row">
       <p>এই ফলাফলটা বন্ধুদের জানিয়ে দাও — তারাও যেন গুজব শেয়ার না করে 👇</p>
       <a class="share-btn wa" id="waShare" href="#" target="_blank" rel="noopener">💬 WhatsApp</a>
@@ -149,10 +172,10 @@
     <h2>⚙️ কীভাবে কাজ করে?</h2>
     <div class="steps">
       <div class="step"><div class="ic">📋</div><p>খবর paste করো</p></div>
-      <div class="step"><div class="ic">🤖</div><p>AI সংকেত বিশ্লেষণ করে</p></div>
+      <div class="step"><div class="ic">🔬</div><p>Link হলে ভেতরের খবর পড়ে গভীর বিশ্লেষণ</p></div>
       <div class="step"><div class="ic">🚦</div><p>রঙিন ফলাফল দেখো</p></div>
     </div>
-    <div class="warn">⚠️ <b>মনে রেখো:</b> এই tool খবরের ভাষা, source আর লেখার ধরন দেখে <b>প্রাথমিক ধারণা</b> দেয় — এটা চূড়ান্ত রায় না। বড় বা গুরুত্বপূর্ণ খবর হলে নির্ভরযোগ্য fact-check site-এও মিলিয়ে দেখো।</div>
+    <div class="warn">⚠️ <b>মনে রেখো:</b> এই tool খবরের ভাষা, source আর লেখার ধরন দেখে <b>প্রাথমিক ধারণা</b> দেয় — এটা চূড়ান্ত রায় না। Link দিলে tool-টা ভেতরের আসল খবরটা পড়ে বিশ্লেষণ করে, তবে Facebook-এর post অনেক সময় login-এর আড়ালে থাকে — সেক্ষেত্রে খবরের লেখাটা copy করে paste করলে সবচেয়ে ভালো ফল পাবে। বড় খবর হলে নির্ভরযোগ্য fact-check site-এও মিলিয়ে দেখো।</div>
   </div>
 
   <div class="card">
@@ -184,52 +207,198 @@ const EXAMPLES = {
   blog: "https://viral-khobor24.blogspot.com/2026/10/breaking-gopon-khobor.html"
 };
 
-const CLICKBAIT = ["চমকে","বিশ্বাস হবে না","অবিশ্বাস্য","গোপন সত্য","গোপন রহস্য","ফাঁস হলো","চাঞ্চল্যকর","তোলপাড়","কেউ জানে না","লুকিয়ে রেখেছিল","ভাইরাল","অবাক কাণ্ড","শেষ পর্যন্ত দেখুন","দেখুন ভিডিওতে","জানলে অবাক","হইচই","মাথা ঘুরে যাবে","shocking","you won't believe","unbelievable","secret","exposed","must watch","watch till end","breaking news","viral"];
+const CLICKBAIT = ["চমকে","বিশ্বাস হবে না","অবিশ্বাস্য","গোপন সত্য","গোপন রহস্য","ফাঁস হলো","চাঞ্চল্যকর","তোলপাড়","কেউ জানে না","লুকিয়ে রেখেছিল","ভাইরাল","অবাক কাণ্ড","শেষ পর্যন্ত দেখুন","দেখুন ভিডিওতে","জানলে অবাক","হইচই","মাথা ঘুরে যাবে","shocking","you won't believe","unbelievable","secret truth","exposed","must watch","watch till end","breaking news","viral"];
 const SHARE_PRESSURE = ["শেয়ার করুন","শেয়ার করো","শেয়ার করে জানিয়ে","সবাইকে জানিয়ে দিন","সবাইকে জানান","ছড়িয়ে দিন","please share","share this","share করে","forward করুন","দেরি না করে শেয়ার"];
 const MONEY = ["ফ্রি পাবেন","ফ্রিতে পাবেন","টাকা ইনকাম","ইনকাম করুন","লটারি","জিতে নিন","মোবাইল রিচার্জ ফ্রি","বিকাশে টাকা পাবেন","free money","lottery","win cash","cash prize"];
 const MIRACLE = ["ক্যান্সার ভালো","একদিনেই ভালো","গ্যারান্টি দিয়ে","১০০% কার্যকর","100% কার্যকর","সব রোগ ভালো","ডায়াবেটিস ভালো"];
 const ATTRIBUTION = ["জানিয়েছেন","জানান","বলেন","বলেছেন","প্রতিবেদক","সংবাদদাতা","সূত্র","কর্মকর্তা","মুখপাত্র","সংবাদ সম্মেলনে"];
-const CREDIBLE = ["prothomalo.com","kalerkantho.com","bdnews24.com","thedailystar.net","dhakatribune.com","jugantor.com","ittefaq.com.bd","somoynews.tv","jamuna.tv","channel24bd.tv","independent24.com","banglanews24.com","ntvbd.com","rtvonline.com","ekattor.tv","bbc.com","reuters.com","aljazeera.com","dw.com","প্রথম আলো","কালের কণ্ঠ","বিবিসি"];
+const CREDIBLE_DOMAINS = ["prothomalo.com","kalerkantho.com","bdnews24.com","thedailystar.net","dhakatribune.com","jugantor.com","ittefaq.com.bd","somoynews.tv","jamuna.tv","channel24bd.tv","independent24.com","banglanews24.com","ntvbd.com","rtvonline.com","ekattor.tv","samakal.com","manabzamin.com","dailyjanakantha.com","banglatribune.com","jagonews24.com","risingbd.com","unb.com.bd","bssnews.net","tbsnews.net","newagebd.net","daily-sun.com","dbcnews.tv","ekushey-tv.com","bbc.com","reuters.com","apnews.com","aljazeera.com","dw.com","theguardian.com","rumorscanner.com","dismislab.com","factwatch.info","boomlive.in","snopes.com"];
+const CREDIBLE_NAMES = ["প্রথম আলো","কালের কণ্ঠ","বিবিসি","যুগান্তর","ইত্তেফাক","সময় টিভি","ডেইলি স্টার","বিডিনিউজ","Rumor Scanner","Dismislab"];
 const SATIRE = ["motikontho.com","earki"];
 const FREEHOST = ["blogspot.com","wordpress.com","weebly.com","sites.google.com","wixsite.com","vercel.app","netlify.app","github.io"];
+const SHORTENERS = ["bit.ly","tinyurl.com","rb.gy","cutt.ly","is.gd","shorturl.at","tiny.cc","s.id","ow.ly","rebrand.ly"];
+const SUS_TLDS = [".xyz",".top",".click",".buzz",".icu",".monster",".fun",".work",".online",".site",".club",".vip"];
+const BRAND_KEYS = ["prothomalo","kalerkantho","bdnews","dailystar","dhakatribune","jugantor","ittefaq","somoynews","jamuna","channel24","banglanews","bbc","reuters","aljazeera"];
+const SOCIAL_DOMAINS = ["facebook.com","fb.com","youtube.com","youtu.be","tiktok.com","instagram.com","x.com","twitter.com"];
+const SLUG_BAIT = ["gopon","viral","breaking","shocking","secret","chomok","chomke","exposed","unbelievable","gujob","scandal"];
+const DATE_HINT = /(জানুয়ারি|ফেব্রুয়ারি|মার্চ|এপ্রিল|মে|জুন|জুলাই|আগস্ট|সেপ্টেম্বর|অক্টোবর|নভেম্বর|ডিসেম্বর|২০[০-৯]{2}|20[0-9]{2}|প্রকাশিত|আপডেট|published|updated)/;
 
-function findDomain(text){
-  const m = text.match(/https?:\/\/([^\s\/]+)/i) || text.match(/\b([a-z0-9-]+\.[a-z]{2,}(?:\.[a-z]{2})?)\b/i);
-  return m ? m[1].toLowerCase().replace(/^www\./,'') : null;
+function findUrl(text){
+  let m = text.match(/https?:\/\/[^\s<>"']+/i);
+  if(m) return m[0].replace(/[),.;]+$/,'');
+  m = text.match(/\b([a-z0-9-]+\.(?:com|net|org|tv|bd|info|xyz|top|online|site|io|me|watch|ly|gy|cc|at|id)(?:\.[a-z]{2})?(?:\/[^\s<>"']*)?)/i);
+  if(m) return 'https://' + m[1];
+  return null;
 }
 
-function analyze(raw){
-  const text = raw.trim();
+function domainOf(url){
+  try { return new URL(url).hostname.toLowerCase().replace(/^www\./,''); }
+  catch(e){
+    const m = String(url).match(/\/\/([^\s\/]+)/);
+    return m ? m[1].toLowerCase().replace(/^www\./,'') : null;
+  }
+}
+
+function isCredibleDomain(d){
+  return CREDIBLE_DOMAINS.some(c => d === c || d.endsWith('.' + c));
+}
+function lookalikeBrand(d){
+  if(isCredibleDomain(d)) return null;
+  const flat = d.replace(/[^a-z]/g,'');
+  return BRAND_KEYS.find(b => flat.includes(b)) || null;
+}
+
+async function fetchWithTimeout(url, ms){
+  const ctrl = new AbortController();
+  const t = setTimeout(()=>ctrl.abort(), ms);
+  try {
+    const r = await fetch(url, { signal: ctrl.signal });
+    clearTimeout(t);
+    return r;
+  } catch(e){ clearTimeout(t); throw e; }
+}
+
+function cleanText(s){
+  return s.replace(/!\[[^\]]*\]\([^)]*\)/g,' ')
+          .replace(/\[([^\]]*)\]\([^)]*\)/g,'$1')
+          .replace(/https?:\/\/[^\s)]+/g,' ')
+          .replace(/[#>*`~|]/g,' ')
+          .replace(/\s+/g,' ')
+          .trim();
+}
+
+function parseJina(t){
+  let title = '';
+  const tm = t.match(/^Title:\s*(.+)$/m);
+  if(tm) title = tm[1].trim();
+  let body = t;
+  const idx = t.indexOf('Markdown Content:');
+  if(idx >= 0) body = t.slice(idx + 'Markdown Content:'.length);
+  body = cleanText(body).slice(0, 7000);
+  return { title, body };
+}
+
+function parseHtml(html){
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  let title = '';
+  const og = doc.querySelector('meta[property="og:title"]');
+  if(og && og.getAttribute('content')) title = og.getAttribute('content').trim();
+  if(!title && doc.title) title = doc.title.trim();
+  doc.querySelectorAll('script,style,nav,footer,header,aside,form,noscript').forEach(n=>n.remove());
+  const body = (doc.body ? doc.body.textContent : '').replace(/\s+/g,' ').trim().slice(0, 7000);
+  return { title, body };
+}
+
+async function fetchArticle(url){
+  try {
+    const r = await fetchWithTimeout('https://r.jina.ai/' + url, 14000);
+    if(r.ok){
+      const t = await r.text();
+      const p = parseJina(t);
+      if(p.body && p.body.length > 200) return p;
+    }
+  } catch(e){}
+  try {
+    const r = await fetchWithTimeout('https://api.allorigins.win/get?url=' + encodeURIComponent(url), 14000);
+    if(r.ok){
+      const j = await r.json();
+      if(j && j.contents){
+        const p = parseHtml(j.contents);
+        if(p.body && p.body.length > 200) return p;
+      }
+    }
+  } catch(e){}
+  return null;
+}
+
+function countHits(list, lower){
+  const found = [];
+  list.forEach(w=>{ if(lower.includes(w.toLowerCase())) found.push(w); });
+  return found;
+}
+
+function analyze(raw, opts){
+  opts = opts || {};
+  const mode = opts.mode || 'text';
+  const url = opts.url || findUrl(raw);
+  const domain = url ? domainOf(url) : null;
+  const title = opts.title || '';
+  const body = opts.body || '';
+  const text = (title + ' ' + (body || raw)).trim();
   const lower = text.toLowerCase();
   let score = 0; const reasons = [];
-  const domain = findDomain(text);
   let credibleHit = false;
 
+  if(mode === 'full') reasons.push("🔬 Link-এর ভেতরের আসল খবরটা পড়ে বিশ্লেষণ করা হয়েছে — শুধু link-এর চেহারা নয়, শিরোনাম আর মূল লেখা মিলিয়ে।");
+  if(mode === 'partial') reasons.push("📎 Link-এর ভেতরের লেখা সরাসরি পড়া যায়নি — তাই শুধু link-এর বৈশিষ্ট্য দেখে প্রাথমিক ধারণা দেওয়া হলো। নিখুঁত ফলাফলের জন্য খবরের লেখাটা copy করে paste করো।");
+
   if(domain){
+    const fakeBrand = lookalikeBrand(domain);
     if(SATIRE.some(d=>domain.includes(d))){
       score += 70;
       reasons.push("🎭 এই site-টা ব্যঙ্গ/স্যাটায়ার (মজা করে বানানো) — এখানকার 'খবর' আসল নয়।");
-    } else if(CREDIBLE.some(d=>domain.includes(d))){
+    } else if(fakeBrand){
+      score += 45;
+      reasons.push("🚨 সাবধান! Domain-টা দেখতে নামকরা সংবাদ মাধ্যমের মতো হলেও এটা আসল site নয় (" + domain + ") — নকল site বানিয়ে ভুয়া খবর ছড়ানো পরিচিত প্রতারণা।");
+      if(SUS_TLDS.some(t=>domain.endsWith(t))){
+        score += 12;
+        reasons.push("⚠️ তার ওপর domain-এর শেষ অংশটাও অস্বাভাবিক — আসল সংবাদ মাধ্যম এমন ending ব্যবহার করে না।");
+      }
+    } else if(isCredibleDomain(domain)){
       score -= 35; credibleHit = true;
-      reasons.push("✅ খবরটা পরিচিত ও নির্ভরযোগ্য সংবাদ মাধ্যম থেকে এসেছে।");
+      reasons.push("✅ খবরটা পরিচিত ও নির্ভরযোগ্য সংবাদ মাধ্যমের website থেকে এসেছে (" + domain + ")।");
+    } else if(SOCIAL_DOMAINS.some(d=>domain === d || domain.endsWith('.' + d))){
+      score += 4;
+      reasons.push("📱 এটা social media-র একটা post/video link — সেখানে যে কেউ যা খুশি পোস্ট করতে পারে, তাই post-এর লেখা দিয়েই যাচাই করা ভালো।");
+    } else if(SHORTENERS.some(d=>domain === d)){
+      score += 16;
+      reasons.push("🔗 এটা ছোট করা (short) link — আসল website-এর নাম লুকানো থাকে। ভুয়া খবর ছড়াতে এই কৌশল বেশি ব্যবহার হয়।");
     } else if(FREEHOST.some(d=>domain.includes(d))){
       score += 16;
-      reasons.push("⚠️ Link-টা একটা ফ্রি ব্লগ/site থেকে — এমন site যে কেউ বানাতে পারে, সম্পাদকীয় যাচাই থাকে না।");
+      reasons.push("⚠️ Link-টা একটা ফ্রি ব্লগ/site থেকে — এমন site যে কেউ মিনিটে বানাতে পারে, সম্পাদকীয় যাচাই থাকে না।");
     } else {
       score += 8;
-      reasons.push("❓ Website-টা খুব একটা পরিচিত নয় — source হিসেবে সতর্ক থাকা ভালো।");
+      reasons.push("❓ Website-টা (" + domain + ") খুব একটা পরিচিত নয় — source হিসেবে সতর্ক থাকা ভালো।");
+      if(SUS_TLDS.some(t=>domain.endsWith(t))){
+        score += 12;
+        reasons.push("⚠️ Domain-এর শেষ অংশটা অস্বাভাবিক — নামকরা সংবাদ মাধ্যম সাধারণত এমন ending ব্যবহার করে না।");
+      }
+      const digits = (domain.match(/[0-9]/g)||[]).length;
+      const hyphens = (domain.match(/-/g)||[]).length;
+      if(digits >= 2 || hyphens >= 2){
+        score += 6;
+        reasons.push("🔢 Domain-এর নামে অনেক সংখ্যা/dash আছে — তাড়াহুড়ো করে বানানো অস্থায়ী site-এর লক্ষণ।");
+      }
+    }
+
+    if(url){
+      let path = '';
+      try { path = new URL(url).pathname.toLowerCase(); } catch(e){}
+      const tokens = path.split(/[-_\/\.]+/).filter(Boolean);
+      const slugHits = tokens.filter(tk => SLUG_BAIT.includes(tk));
+      if(slugHits.length >= 2){
+        score += 8;
+        reasons.push("🏷️ Link-এর নামের মধ্যেই উত্তেজনাকর শব্দ (" + slugHits.slice(0,3).join(", ") + ") — click টানার জন্য বানানো link-এর লক্ষণ।");
+      }
     }
   }
-  if(!domain && CREDIBLE.some(d=>text.includes(d))){
+  if(!domain && CREDIBLE_NAMES.some(n=>text.includes(n))){
     score -= 20; credibleHit = true;
     reasons.push("✅ লেখায় নির্ভরযোগ্য সংবাদ মাধ্যমের নাম উল্লেখ আছে।");
   }
 
-  let cb = 0; const cbFound = [];
-  CLICKBAIT.forEach(w=>{ if(lower.includes(w)){ cb++; cbFound.push(w); } });
-  if(cb>0){
-    score += Math.min(cb*6, 30);
-    reasons.push("🎣 Clickbait ভাষা পাওয়া গেছে (" + cbFound.slice(0,3).join(", ") + ") — অতিরঞ্জিত ভাষা ভুয়া খবরের বড় লক্ষণ।");
+  if(title){
+    const tHits = countHits(CLICKBAIT, title.toLowerCase());
+    if(tHits.length){
+      score += Math.min(tHits.length * 7, 24);
+      reasons.push("📰 শিরোনামেই clickbait ভাষা (" + tHits.slice(0,3).join(", ") + ") — পাঠক টানতে অতিরঞ্জিত শিরোনাম দেওয়া হয়েছে।");
+    }
+  }
+
+  const cbFound = countHits(CLICKBAIT, lower);
+  if(cbFound.length){
+    score += Math.min(cbFound.length * 6, 30);
+    reasons.push("🎣 পুরো লেখায় clickbait/অতিরঞ্জিত ভাষা পাওয়া গেছে (" + cbFound.slice(0,3).join(", ") + ") — এমন ভাষা ভুয়া খবরের বড় লক্ষণ।");
   }
 
   if(SHARE_PRESSURE.some(w=>lower.includes(w))){
@@ -246,64 +415,78 @@ function analyze(raw){
   }
 
   const excl = (text.match(/!/g)||[]).length;
-  if(excl>=3){
+  if(excl >= 3){
     score += 10;
     reasons.push("‼️ অতিরিক্ত বিস্ময়সূচক চিহ্ন (!) — উত্তেজনা তৈরি করে ছড়ানোই উদ্দেশ্য মনে হচ্ছে।");
   }
 
-  const words = text.match(/[A-Za-z]{3,}/g)||[];
-  if(words.length>=4){
-    const caps = words.filter(w=>w===w.toUpperCase()).length;
-    if(caps/words.length>0.35){
+  const latinWords = text.match(/[A-Za-z]{3,}/g)||[];
+  if(latinWords.length >= 4){
+    const caps = latinWords.filter(w=>w === w.toUpperCase()).length;
+    if(caps / latinWords.length > 0.35){
       score += 8;
       reasons.push("🔠 অনেক শব্দ বড় হাতের অক্ষরে (ALL CAPS) — চিৎকার করে বিশ্বাস করানোর চেষ্টা।");
     }
   }
 
   const emojis = (text.match(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu)||[]).length;
-  if(emojis>=4){
+  if(emojis >= 4){
     score += 6;
     reasons.push("😱 প্রচুর ইমোজি ব্যবহার করা হয়েছে — আবেগ দিয়ে ভাইরাল করার কৌশল।");
   }
 
   const hasAttribution = ATTRIBUTION.some(w=>text.includes(w));
-  if(!domain && text.length>0 && text.length<70){
+  if(mode !== 'full' && !domain && text.length > 0 && text.length < 70){
     score += 8;
     reasons.push("✂️ লেখাটা খুবই ছোট — কোনো বিস্তারিত তথ্য বা সূত্র নেই।");
   }
   if(hasAttribution){
     score -= 10;
     reasons.push("🗣️ লেখায় বক্তব্য/সূত্রের উল্লেখ আছে — প্রতিবেদনের ধাঁচ, এটা ভালো লক্ষণ।");
-  } else if(text.length>=70){
+  } else if(text.length >= 70){
     score += 8;
     reasons.push("🔎 এত বড় দাবি, অথচ কারো বক্তব্য বা সূত্রের উল্লেখ নেই।");
+  }
+
+  if(body && body.length > 300){
+    if(DATE_HINT.test(body) || DATE_HINT.test(title)){
+      score -= 6;
+      reasons.push("📅 খবরে তারিখ/প্রকাশের তথ্যের উল্লেখ আছে — প্রতিবেদনের ভালো লক্ষণ।");
+    } else {
+      score += 6;
+      reasons.push("📅 খবরটায় কোনো তারিখের উল্লেখ নেই — পুরনো খবর নতুন ঘটনা বলে চালানো গুজবের পরিচিত কৌশল।");
+    }
   }
 
   score = Math.max(0, Math.min(100, score));
 
   let verdict, advice, color;
-  if(score>=55){
+  if(score >= 55){
     verdict = "🔴 সাবধান! ভুয়া হওয়ার জোরালো লক্ষণ";
     advice = "এই খবরটা শেয়ার না করাই ভালো। আগে Rumor Scanner / Dismislab-এ মিলিয়ে দেখো।";
     color = "#dc2626";
-  } else if(score>=30){
+  } else if(score >= 30){
     verdict = "🟡 সন্দেহজনক — নিশ্চিত হওয়া যাচ্ছে না";
     advice = "শেয়ার করার আগে অন্য নির্ভরযোগ্য মাধ্যমে খবরটা আছে কিনা যাচাই করো।";
     color = "#d97706";
   } else {
     verdict = "🟢 আপাতত নির্ভরযোগ্য মনে হচ্ছে";
-    advice = "ভুয়া হওয়ার বড় লক্ষণ পাইনি। তবু খুব বড় দাবি হলে সূত্রটা একবার মিলিয়ে দেখো।";
+    advice = mode === 'partial'
+      ? "বড় কোনো সতর্ক সংকেত পাইনি — তবে এটা শুধু link দেখে বলা। পুরোপুরি নিশ্চিত হতে খবরের লেখাটা copy করে paste করে আবার যাচাই করো।"
+      : "ভুয়া হওয়ার বড় লক্ষণ পাইনি। তবু খুব বড় দাবি হলে সূত্রটা একবার মিলিয়ে দেখো।";
     color = "#16a34a";
   }
 
-  if(reasons.length<2 && !credibleHit){
+  if(reasons.length < 3 && !credibleHit){
     reasons.push("🧐 বড় কোনো সতর্ক সংকেত পাইনি, তবে source-টা নিজে একবার দেখে নেওয়া ভালো।");
   }
-  return { score, verdict, advice, color, reasons };
+  return { score, verdict, advice, color, reasons, mode, title, domain };
 }
 
 const input = document.getElementById('newsInput');
 const charCount = document.getElementById('charCount');
+const checkBtn = document.getElementById('checkBtn');
+const statusLine = document.getElementById('statusLine');
 input.addEventListener('input', ()=>{ charCount.textContent = input.value.length; });
 
 document.querySelectorAll('.chip').forEach(ch=>{
@@ -314,9 +497,14 @@ document.querySelectorAll('.chip').forEach(ch=>{
   });
 });
 
-document.getElementById('checkBtn').addEventListener('click', runCheck);
+checkBtn.addEventListener('click', runCheck);
 
-function runCheck(){
+function setStatus(msg){
+  if(msg){ statusLine.textContent = msg; statusLine.style.display = 'block'; }
+  else statusLine.style.display = 'none';
+}
+
+async function runCheck(){
   const val = input.value.trim();
   if(!val){
     input.focus();
@@ -324,9 +512,42 @@ function runCheck(){
     setTimeout(()=>{ input.style.borderColor=''; }, 1200);
     return;
   }
-  const r = analyze(val);
+  const url = findUrl(val);
+  const restText = url ? val.replace(url, '').trim() : val;
+  let r;
+  if(url && restText.length < 40){
+    checkBtn.disabled = true;
+    const oldLabel = checkBtn.textContent;
+    checkBtn.textContent = '⏳ যাচাই চলছে...';
+    setStatus('🔗 Link খুলে ভেতরের আসল খবরটা পড়ছি... একটু অপেক্ষা করো ⏳');
+    const art = await fetchArticle(url);
+    if(art && art.body && art.body.length > 200){
+      r = analyze(val, { mode:'full', url, title: art.title, body: art.body });
+    } else {
+      r = analyze(val, { mode:'partial', url });
+    }
+    checkBtn.disabled = false;
+    checkBtn.textContent = oldLabel;
+    setStatus('');
+  } else {
+    r = analyze(val, { mode:'text', url });
+  }
+  render(r);
+}
+
+function render(r){
   const res = document.getElementById('result');
   res.style.display = 'block';
+  const badge = document.getElementById('modeBadge');
+  badge.textContent = r.mode === 'full' ? '🔬 সম্পূর্ণ যাচাই — লিঙ্কের আসল লেখা পড়ে'
+    : r.mode === 'partial' ? '📎 আংশিক যাচাই — শুধু লিঙ্ক দেখে'
+    : '📝 লেখা বিশ্লেষণ';
+  const titleEl = document.getElementById('articleTitle');
+  if(r.mode === 'full' && r.title){
+    titleEl.textContent = '📰 শিরোনাম: ' + r.title;
+    titleEl.style.display = 'block';
+  } else titleEl.style.display = 'none';
+
   const vTitle = document.getElementById('verdictTitle');
   vTitle.textContent = r.verdict;
   vTitle.style.color = r.color;
@@ -338,6 +559,15 @@ function runCheck(){
     li.textContent = x;
     ul.appendChild(li);
   });
+
+  const cc = document.getElementById('crossCheck');
+  let query = '';
+  if(r.mode === 'full' && r.title) query = r.title;
+  else if(r.domain) query = r.domain;
+  if(query){
+    cc.innerHTML = '🔎 নিজে আরও মিলিয়ে দেখতে চাও? <a href="https://www.google.com/search?q=' + encodeURIComponent(query) + '" target="_blank" rel="noopener">Google-এ এটা search করে দেখো</a> — বড় সংবাদ মাধ্যমগুলোতেও খবরটা আছে কিনা।';
+  } else cc.innerHTML = '';
+
   const ring = document.getElementById('ring');
   const num = document.getElementById('ringNum');
   num.style.color = r.color;
@@ -345,7 +575,7 @@ function runCheck(){
   let cur = 0; const target = r.score;
   const iv = setInterval(()=>{
     cur += 2;
-    if(cur>=target){ cur = target; clearInterval(iv); }
+    if(cur >= target){ cur = target; clearInterval(iv); }
     num.textContent = cur + '%';
   }, 18);
 
